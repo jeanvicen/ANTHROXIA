@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>ANTHROXIA</title>
-  <meta name="description" content="ANTHROXIA — estúdio de produtos e arquiteturas de inteligência. Criadores do KAZER." />
-  <meta name="theme-color" content="#0c090b" />
+  <title>ANTHROXIA — Biblioteca</title>
+  <meta name="description" content="A biblioteca da ANTHROXIA: nove volumes sobre o estúdio, o KAZER e tudo o que estamos construindo. Abra um livro." />
+  <meta name="theme-color" content="#160b14" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ANTHROXIA" />
-  <meta property="og:description" content="Construímos o que ainda não tem nome. Criadores do KAZER." />
+  <meta property="og:title" content="ANTHROXIA — Biblioteca" />
+  <meta property="og:description" content="Nove volumes sobre o estúdio, o KAZER e tudo o que estamos construindo." />
   <meta property="og:image" content="assets/img/og.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -18,486 +18,333 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Jost:wght@300..600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/library.css" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./assets/vendor/three/three.module.js",
+        "three/addons/": "./assets/vendor/three/addons/"
+      }
+    }
+  </script>
 </head>
 <body class="is-loading">
 
-  <!-- ============ LOADER ============ -->
-  <div class="loader" aria-hidden="true">
-    <div class="loader__inner">
-      <img class="loader__mono" src="assets/img/monogram.png" alt="" />
-      <div class="loader__word" data-split>ANTHROXIA</div>
-      <div class="loader__bar"><span></span></div>
+  <!-- Carregamento -->
+  <div class="loader" role="status" aria-live="polite">
+    <div class="loader__mark">
+      <img src="assets/img/monogram.png" alt="" class="loader__mono" />
+      <img src="assets/img/wordmark.png" alt="ANTHROXIA" class="loader__word" />
     </div>
+    <div class="loader__bar" aria-hidden="true"><span></span></div>
+    <p class="loader__text">Acendendo a biblioteca</p>
   </div>
 
-  <!-- ============ CURSOR ============ -->
-  <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
+  <!-- A sala 3D -->
+  <canvas class="room" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
 
-  <!-- ============ HEADER ============ -->
-  <header class="header">
-    <a href="#top" class="header__brand" aria-label="ANTHROXIA — início">
-      <img src="assets/img/monogram.png" alt="" class="header__mono" />
-      <span class="header__name">ANTHROXIA</span>
+  <!-- Interface -->
+  <header class="hud hud--top">
+    <a class="brand" href="./" aria-label="ANTHROXIA, voltar ao início">
+      <img src="assets/img/monogram.png" alt="" class="brand__mono" />
+      <span class="brand__name">ANTHROXIA</span>
     </a>
-    <nav class="header__nav" aria-label="Principal">
-      <a href="#manifesto">Manifesto</a>
-      <a href="#kazer">KAZER</a>
-      <a href="#livro">O Livro</a>
-      <a href="#download" class="header__cta">Download</a>
-    </nav>
-    <button class="header__burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
-      <span></span><span></span>
-    </button>
+
+    <div class="hud__controls">
+      <div class="seg" role="group" aria-label="Como ver os volumes">
+        <button type="button" class="seg__btn" data-view="shelf" aria-pressed="true">Estante</button>
+        <button type="button" class="seg__btn" data-view="list" aria-pressed="false">Lista</button>
+      </div>
+
+      <div class="clock">
+        <button type="button" class="clock__btn" aria-expanded="false" aria-controls="clock-panel">
+          <svg class="clock__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" class="clock__sun"/><path class="clock__moon" d="M15.5 4.5a8 8 0 1 0 4 12.6A7 7 0 0 1 15.5 4.5z"/></svg>
+          <span data-clock-time>--:--</span>
+        </button>
+        <div class="clock__panel" id="clock-panel" hidden>
+          <p class="clock__phase" data-clock-phase>Agora</p>
+          <p class="clock__help">A luz da sala segue o seu horário. Arraste para ver outra hora.</p>
+          <input type="range" min="0" max="23.75" step="0.25" value="12" aria-label="Hora da sala" data-clock-range />
+          <div class="clock__scale" aria-hidden="true"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+          <button type="button" class="textbtn" data-clock-now>Usar a hora atual</button>
+        </div>
+      </div>
+
+      <button type="button" class="cta" data-open-slug="download" aria-label="Baixar o KAZER"><span class="cta__full" aria-hidden="true">Baixar o KAZER</span><span class="cta__short" aria-hidden="true">Baixar</span></button>
+    </div>
   </header>
 
-  <div class="mobile-menu" id="mobile-menu" hidden>
-    <nav aria-label="Menu">
-      <a href="#manifesto"><em>I</em>Manifesto</a>
-      <a href="#kazer"><em>II</em>KAZER</a>
-      <a href="#livro"><em>III</em>O Livro</a>
-      <a href="#download"><em>IV</em>Download</a>
-    </nav>
-    <img src="assets/img/wordmark.png" alt="ANTHROXIA" class="mobile-menu__word" />
-  </div>
-
-  <main id="top">
-
-    <!-- ============ HERO / PORTAL ============ -->
-    <section class="hero" aria-label="ANTHROXIA">
-      <div class="hero__stage">
-        <svg class="hero__columns" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
-        <div class="hero__rays" aria-hidden="true"></div>
-
-        <div class="portal" aria-hidden="true">
-          <div class="portal__disc"></div>
-          <img class="portal__mono" src="assets/img/monogram.png" alt="" />
-        </div>
-
-        <div class="hero__copy">
-          <p class="eyebrow hero__eyebrow">Estúdio de produtos &amp; arquiteturas de inteligência</p>
-          <h1 class="hero__title">
-            <img src="assets/img/wordmark.png" alt="ANTHROXIA" />
-          </h1>
-          <p class="hero__lead">Construímos o que ainda não tem nome.</p>
-        </div>
-
-        <div class="hero__scroll" aria-hidden="true">
-          <span>Role para entrar</span>
-          <i></i>
-        </div>
-        <div class="hero__tag hero__tag--l" aria-hidden="true">Nº 001 — Experience</div>
-        <div class="hero__tag hero__tag--r" aria-hidden="true">MMXXVI</div>
-      </div>
-    </section>
-
-    <!-- ============ MANIFESTO ============ -->
-    <section class="manifesto" id="manifesto">
-      <div class="manifesto__inner">
-        <p class="eyebrow eyebrow--ink">I — Manifesto</p>
-        <p class="manifesto__text" data-words>
-          Não fazemos apenas aplicativos. Erguemos <em>arquiteturas</em> onde a inteligência mora —
-          sistemas gigantes, desenhados com o cuidado de um ateliê e a ambição de um império.
-          Cada linha de código é um traço de nanquim. Cada produto, um <em>mundo</em> inteiro.
-        </p>
-        <div class="manifesto__sign">
-          <img src="assets/img/monogram.png" alt="" />
-          <span>ANTHROXIA</span>
-        </div>
-      </div>
-      <div class="marquee" aria-hidden="true">
-        <div class="marquee__track">
-          <span>ANTHROXIA</span><i>✦</i><span>KAZER</span><i>✦</i><span>Inteligência com arquitetura</span><i>✦</i><span>Em breve no Android</span><i>✦</i>
-          <span>ANTHROXIA</span><i>✦</i><span>KAZER</span><i>✦</i><span>Inteligência com arquitetura</span><i>✦</i><span>Em breve no Android</span><i>✦</i>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ PILARES ============ -->
-    <section class="pillars" aria-label="Como construímos">
-      <div class="pillars__head">
-        <p class="eyebrow">Como construímos</p>
-        <h2 class="display">Três colunas<br /><em>sustentam tudo.</em></h2>
-      </div>
-      <div class="pillars__grid">
-        <article class="pillar" data-reveal>
-          <svg class="pillar__art" viewBox="0 0 120 220" aria-hidden="true"><use href="#col-mini" /></svg>
-          <span class="pillar__num">01</span>
-          <h3>Arquitetura</h3>
-          <p>Sistemas pensados para escalar desde o primeiro rabisco. Backend único, múltiplos clientes, nada improvisado.</p>
-        </article>
-        <article class="pillar" data-reveal>
-          <svg class="pillar__art" viewBox="0 0 120 220" aria-hidden="true"><use href="#col-mini" /></svg>
-          <span class="pillar__num">02</span>
-          <h3>Inteligência</h3>
-          <p>IA que roda na nuvem e, quando o aparelho permite, direto no seu celular. Você escolhe onde seus dados vivem.</p>
-        </article>
-        <article class="pillar" data-reveal>
-          <svg class="pillar__art" viewBox="0 0 120 220" aria-hidden="true"><use href="#col-mini" /></svg>
-          <span class="pillar__num">03</span>
-          <h3>Estética</h3>
-          <p>Design como assinatura. Escuro, preciso, autoral — porque a forma também é função.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ============ KAZER ============ -->
-    <section class="kazer" id="kazer">
-      <div class="kazer__bg-word" aria-hidden="true">KAZER</div>
-      <div class="kazer__grid">
-        <div class="kazer__copy">
-          <p class="eyebrow">II — Nosso primeiro produto</p>
-          <h2 class="kazer__title">KAZER</h2>
-          <p class="kazer__by"><img src="assets/img/monogram.png" alt="" /> a product by <strong>ANTHROXIA</strong></p>
-          <p class="kazer__lead">
-            Um assistente de inteligência artificial com duas casas: a web e um
-            <strong>app Android nativo</strong>. A mesma conta, as mesmas conversas —
-            e, nos aparelhos compatíveis, o modelo <strong>KAZ 1.1</strong> rodando
-            direto no seu celular.
-          </p>
-
-          <ul class="features">
-            <li data-reveal>
-              <span class="features__k">01</span>
-              <div><h3>Uma conta, dois mundos</h3><p>Entre pela web ou pelo app. Sua identidade KAZER é a mesma em qualquer lugar.</p></div>
-            </li>
-            <li data-reveal>
-              <span class="features__k">02</span>
-              <div><h3>IA no seu bolso</h3><p>Modelo local baixado à parte, verificado e usando CPU/GPU/NPU do aparelho quando suportado.</p></div>
-            </li>
-            <li data-reveal>
-              <span class="features__k">03</span>
-              <div><h3>Nuvem quando precisa</h3><p>Enquanto o modelo baixa, o KAZER já funciona pela nuvem. No modo só-local, nada sai do aparelho sem você saber.</p></div>
-            </li>
-          </ul>
-
-          <div class="kazer__actions">
-            <a href="#download" class="btn btn--copper" data-cursor="Baixar">Ver download</a>
-            <a href="#livro" class="btn btn--ghost" data-cursor="Abrir">Ler no Livro</a>
-          </div>
-          <p class="status-note"><span class="dot"></span> Em desenvolvimento ativo</p>
-        </div>
-
-        <div class="kazer__device" aria-label="Prévia conceitual da interface do KAZER">
-          <div class="phone">
-            <div class="phone__notch"></div>
-            <div class="phone__screen">
-              <div class="app__top">
-                <span class="app__brand">KAZER</span>
-                <span class="app__model">KAZ 1.1 · local</span>
-              </div>
-              <div class="app__chat">
-                <div class="msg msg--user">Me ajuda a planejar a arquitetura do meu próximo projeto?</div>
-                <div class="msg msg--ai"><span class="typing" data-typing="Claro. Vamos começar pelas fundações: quem são os usuários, onde os dados vivem e o que precisa funcionar offline."></span></div>
-              </div>
-              <div class="app__dl">
-                <div class="app__dl-head"><span>Baixando KAZ 1.1</span><span class="app__dl-pct">64%</span></div>
-                <div class="app__dl-bar"><i></i></div>
-                <small>Você já pode continuar usando o KAZER.</small>
-              </div>
-              <div class="app__composer"><span>Pergunte qualquer coisa…</span><i></i></div>
-            </div>
-          </div>
-          <p class="kazer__caption">Prévia conceitual — interface sujeita a mudanças.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ ARQUITETURA ============ -->
-    <section class="arch" aria-label="Arquitetura do KAZER">
-      <div class="arch__head">
-        <p class="eyebrow eyebrow--ink">Planta baixa</p>
-        <h2 class="display display--ink">Um produto.<br /><em>Dois clientes.</em></h2>
-      </div>
-      <div class="arch__diagram" data-reveal>
-        <div class="node node--top"><small>Base compartilhada</small><strong>Backend KAZER</strong><span>Contas · Conversas · Modelos na nuvem</span></div>
-        <svg class="arch__lines" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M300 0 V40 H120 V120 M300 40 H480 V120" />
-        </svg>
-        <div class="arch__row">
-          <div class="node"><small>Cliente</small><strong>KAZER Web</strong><span>Navegador · IA na nuvem</span></div>
-          <div class="node node--hl"><small>Cliente</small><strong>KAZER Android</strong><span>Kotlin nativo · Roteador de IA</span></div>
-        </div>
-        <svg class="arch__lines arch__lines--r" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M480 0 V40 H380 V120 M480 40 H580 V120" />
-        </svg>
-        <div class="arch__row arch__row--r">
-          <div class="node node--sm"><strong>IA local</strong><span>KAZ 1.1 no aparelho</span></div>
-          <div class="node node--sm"><strong>IA na nuvem</strong><span>Via backend</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ O LIVRO ============ -->
-    <section class="library" id="livro">
-      <div class="library__head">
-        <p class="eyebrow">III — O Livro</p>
-        <h2 class="display">Tudo o que estamos<br /><em>construindo</em> está aqui dentro.</h2>
-        <p class="library__hint">Toque no livro para abri-lo.</p>
-      </div>
-
-      <div class="library__stage">
-        <div class="library__glow" aria-hidden="true"></div>
-        <button class="book" type="button" aria-label="Abrir o Livro da ANTHROXIA" data-cursor="Abrir">
-          <span class="book__shadow" aria-hidden="true"></span>
-          <span class="book__body">
-            <span class="book__back" aria-hidden="true"></span>
-            <span class="book__pages" aria-hidden="true"></span>
-            <span class="book__spine" aria-hidden="true"></span>
-            <span class="book__leaf" aria-hidden="true">
-              <span class="book__leaf-k">Capítulo I</span>
-              <span class="book__leaf-t">O Princípio</span>
-              <span class="book__leaf-l"></span><span class="book__leaf-l"></span><span class="book__leaf-l"></span><span class="book__leaf-l short"></span>
-            </span>
-            <span class="book__cover">
-              <span class="book__front">
-                <span class="book__frame"></span>
-                <img src="assets/img/monogram.png" alt="" class="book__mono" />
-                <span class="book__title">ANTHROXIA</span>
-                <span class="book__sub">O Livro · Volume I</span>
-              </span>
-              <span class="book__inside" aria-hidden="true">
-                <img src="assets/img/monogram.png" alt="" />
-              </span>
-            </span>
-          </span>
-        </button>
-        <svg class="library__pedestal" viewBox="0 0 600 160" aria-hidden="true"><use href="#pedestal" /></svg>
-      </div>
-    </section>
-
-    <!-- ============ DOWNLOAD ============ -->
-    <section class="download" id="download">
-      <div class="download__head">
-        <p class="eyebrow">IV — Download</p>
-        <h2 class="display">Leve o KAZER<br /><em>com você.</em></h2>
-        <p class="download__lead">Downloads oficiais e verificados aparecem aqui primeiro. Nada de espelhos, nada de links de terceiros.</p>
-      </div>
-
-      <div class="dl-card" data-dl>
-        <div class="dl-card__main">
-          <div class="dl-card__icon"><img src="assets/img/monogram.png" alt="" /></div>
-          <div class="dl-card__info">
-            <div class="dl-card__row">
-              <h3>KAZER para Android</h3>
-              <span class="pill" data-dl-status>Em breve</span>
-            </div>
-            <p class="dl-card__desc">App nativo · a product by ANTHROXIA</p>
-            <dl class="specs">
-              <div><dt>Versão</dt><dd data-dl-field="version">—</dd></div>
-              <div><dt>Tamanho</dt><dd data-dl-field="size">—</dd></div>
-              <div><dt>Compatibilidade</dt><dd data-dl-field="minAndroid">—</dd></div>
-              <div><dt>Publicado</dt><dd data-dl-field="publishedAt">—</dd></div>
-            </dl>
-          </div>
-        </div>
-
-        <div class="dl-card__actions">
-          <a class="btn btn--copper btn--lg is-disabled" data-dl-apk aria-disabled="true" role="link" tabindex="-1">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16"/></svg>
-            <span data-dl-apk-label>APK em breve</span>
-          </a>
-          <a class="btn btn--ghost btn--lg is-disabled" data-dl-play aria-disabled="true" role="link" tabindex="-1">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5v17l14-8.5z"/></svg>
-            <span data-dl-play-label>Google Play em breve</span>
-          </a>
-          <a class="btn btn--ghost btn--lg is-disabled" data-dl-web aria-disabled="true" role="link" tabindex="-1">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>
-            <span data-dl-web-label>Versão web em breve</span>
-          </a>
-        </div>
-
-        <div class="dl-card__verify" data-dl-verify hidden>
-          <span>SHA-256</span>
-          <code data-dl-sha></code>
-          <button type="button" class="copy" data-copy>Copiar</button>
-        </div>
-
-        <details class="dl-card__howto">
-          <summary>Como instalar o APK no Android</summary>
-          <ol>
-            <li>Toque em <strong>Baixar APK</strong>. O arquivo vai para os <strong>Downloads</strong> do Chrome / do seu Android.</li>
-            <li>Abra o arquivo baixado. O Android pode pedir para <strong>permitir instalação desta fonte</strong> — isso é normal para apps fora da Play Store.</li>
-            <li>(Opcional) Confira o <strong>SHA-256</strong> exibido acima para garantir que o arquivo é o oficial.</li>
-            <li>Toque em <strong>Instalar</strong>, abra o KAZER e entre com sua conta.</li>
-          </ol>
-          <p class="fine">Prefere atualizações automáticas? Quando o KAZER estiver na Google Play, use a loja — é o canal recomendado.</p>
-        </details>
-      </div>
-
-      <p class="download__legal" data-dl-privacy hidden><a href="#" target="_blank" rel="noopener">Política de Privacidade</a></p>
-    </section>
-
-  </main>
-
-  <!-- ============ FOOTER ============ -->
-  <footer class="footer">
-    <img src="assets/img/wordmark.png" alt="ANTHROXIA" class="footer__word" />
-    <div class="footer__row">
-      <p>© <span data-year>2026</span> ANTHROXIA. Todos os direitos reservados.</p>
-      <p>KAZER — a product by ANTHROXIA</p>
-      <p class="footer__links" data-contact></p>
+  <footer class="hud hud--bottom">
+    <div class="caption" aria-live="polite">
+      <span class="caption__num"></span>
+      <span class="caption__title">Biblioteca da ANTHROXIA</span>
+      <span class="caption__text">Nove volumes sobre o estúdio, o KAZER e tudo o que estamos construindo.</span>
     </div>
+    <p class="hint" data-hint></p>
   </footer>
 
-  <!-- ============ CODEX: O SITE DENTRO DO LIVRO ============ -->
-  <div class="codex" id="codex" role="dialog" aria-modal="true" aria-label="O Livro da ANTHROXIA" hidden>
-    <div class="codex__veil"></div>
-    <div class="codex__book">
-      <header class="codex__bar">
-        <div class="codex__brand"><img src="assets/img/monogram.png" alt="" /> <span>O Livro · Vol. I</span></div>
-        <nav class="codex__toc" aria-label="Capítulos"></nav>
-        <button class="codex__close" type="button" aria-label="Fechar o livro">Fechar <i>✕</i></button>
-      </header>
+  <!-- Navegação por teclado / leitores de tela (botões gerados) -->
+  <nav class="shelf-nav" aria-label="Volumes da estante"></nav>
 
-      <div class="codex__spread">
-        <div class="codex__page codex__page--l"></div>
-        <div class="codex__gutter" aria-hidden="true"></div>
-        <div class="codex__page codex__page--r"></div>
+  <!-- Prévia que sobe acima do livro -->
+  <div class="peek" aria-hidden="true">
+    <div class="peek__card">
+      <div class="peek__frame"><canvas class="peek__canvas"></canvas></div>
+      <div class="peek__meta">
+        <span class="peek__num"></span>
+        <span class="peek__title"></span>
       </div>
+      <div class="peek__actions">
+        <button type="button" class="peek__btn" data-peek-open>Abrir</button>
+        <button type="button" class="peek__btn peek__btn--ghost" data-peek-immerse>Ampliar</button>
+      </div>
+    </div>
+    <span class="peek__string"></span>
+  </div>
 
-      <footer class="codex__foot">
-        <button type="button" class="codex__nav" data-dir="-1" aria-label="Página anterior">← Anterior</button>
-        <span class="codex__folio"><b data-folio>I</b> / <span data-total>VI</span></span>
-        <button type="button" class="codex__nav" data-dir="1" aria-label="Próxima página">Próxima →</button>
-      </footer>
+  <!-- Lista de capas -->
+  <section class="catalog" aria-label="Lista de volumes" hidden>
+    <ol class="catalog__track"></ol>
+  </section>
+
+  <!-- Livro aberto -->
+  <div class="reader" role="dialog" aria-modal="true" aria-labelledby="reader-title" hidden>
+    <div class="reader__backdrop"></div>
+    <div class="reader__book">
+      <div class="reader__board" aria-hidden="true"></div>
+      <div class="reader__page reader__page--l"></div>
+      <div class="reader__page reader__page--r"></div>
+      <div class="reader__gutter" aria-hidden="true"></div>
+    </div>
+    <div class="flycover" aria-hidden="true">
+      <canvas class="flycover__front"></canvas>
+      <div class="flycover__back"><img src="assets/img/monogram.png" alt="" /></div>
+    </div>
+    <button class="reader__close" type="button">Fechar o livro</button>
+    <nav class="reader__nav" aria-label="Outros volumes">
+      <button type="button" class="reader__step" data-step="-1"><span class="reader__dir">Volume anterior</span><span class="reader__name"></span></button>
+      <span class="reader__count"></span>
+      <button type="button" class="reader__step" data-step="1"><span class="reader__dir">Próximo volume</span><span class="reader__name"></span></button>
+    </nav>
+  </div>
+
+  <!-- Prévia em tela cheia -->
+  <div class="immerse" role="dialog" aria-modal="true" aria-labelledby="immerse-title" hidden>
+    <canvas class="immerse__canvas"></canvas>
+    <div class="immerse__hud">
+      <div>
+        <p class="immerse__title" id="immerse-title"></p>
+        <p class="immerse__hint"></p>
+      </div>
+      <button type="button" class="immerse__close">Voltar</button>
     </div>
   </div>
 
-  <!-- Capítulos do livro (edite à vontade) -->
-  <template id="chapters">
-    <article data-title="O Princípio" data-numeral="I">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo I</p>
-        <h2 class="c-title">O Princípio</h2>
-        <div class="c-art c-art--mono"><img src="assets/img/monogram.png" alt="" /></div>
-      </div>
-      <div data-side="r">
-        <p class="c-drop">A ANTHROXIA nasceu de uma ideia simples e teimosa: tecnologia não precisa parecer genérica. Ela pode ter alma, assinatura e arquitetura.</p>
-        <p>Somos um estúdio que constrói produtos de inteligência artificial pensados como obras — cada sistema planejado em camadas, cada tela desenhada com intenção.</p>
-        <p>Este livro é o nosso caderno de obra aberto. Aqui você acompanha o que estamos erguendo, por que estamos erguendo e como cada peça se encaixa.</p>
-        <p class="c-note">Vire a página →</p>
-      </div>
-    </article>
+  <div class="tip" aria-hidden="true"></div>
 
-    <article data-title="KAZER" data-numeral="II">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo II</p>
-        <h2 class="c-title">KAZER</h2>
-        <p class="c-sub">a product by ANTHROXIA</p>
-        <div class="c-art c-art--word">KAZER</div>
-      </div>
-      <div data-side="r">
-        <p class="c-drop">O KAZER é o nosso primeiro grande produto: um assistente de IA com conta única, conversas sincronizadas e um visual escuro, minimalista e refinado.</p>
-        <ul class="c-list">
-          <li><b>KAZER Web</b> — continua no navegador, com os modelos na nuvem.</li>
-          <li><b>KAZER Android</b> — um app nativo de verdade (Kotlin + Jetpack Compose), não um site embrulhado.</li>
-          <li><b>KAZ 1.1</b> — o modelo que dá voz ao KAZER, na nuvem e, em aparelhos compatíveis, localmente.</li>
-        </ul>
-        <p>Login, cadastro, verificação de e-mail e recuperação de senha funcionam com a mesma identidade nos dois clientes.</p>
-      </div>
-    </article>
+  <noscript>
+    <div class="noscript">
+      <img src="assets/img/logo-full.png" alt="ANTHROXIA" />
+      <p>A biblioteca da ANTHROXIA precisa de JavaScript para abrir os livros.</p>
+    </div>
+  </noscript>
 
-    <article data-title="IA no Aparelho" data-numeral="III">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo III</p>
-        <h2 class="c-title">IA no Aparelho</h2>
-        <div class="c-art c-art--chip" aria-hidden="true"><span>CPU</span><span>GPU</span><span>NPU</span></div>
-      </div>
-      <div data-side="r">
-        <p class="c-drop">O app não vem com o modelo embutido — ele fica leve. Depois de entrar, você escolhe baixar o KAZ 1.1 local.</p>
-        <ol class="c-steps">
-          <li>O app verifica se o seu aparelho é compatível (Android, memória, armazenamento).</li>
-          <li>O download roda em segundo plano, com progresso real em bytes e notificação.</li>
-          <li>O arquivo é verificado por SHA-256 antes de ser instalado.</li>
-          <li>Só depois de um teste real de inicialização o modelo é marcado como pronto.</li>
-        </ol>
-        <p>Enquanto isso, o KAZER segue funcionando pela nuvem. O modelo sobrevive a logout, troca de conta e atualizações do app.</p>
-      </div>
-    </article>
+  <!-- ==================================================================
+       CONTEÚDO DOS VOLUMES
+       Cada <template> é um livro. "left" = página da esquerda,
+       "right" = página da direita. Edite os textos à vontade.
+       ================================================================== -->
 
-    <article data-title="Privacidade" data-numeral="IV">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo IV</p>
-        <h2 class="c-title">Privacidade sem truques</h2>
-        <div class="c-art c-art--seal" aria-hidden="true"><img src="assets/img/monogram.png" alt="" /></div>
-      </div>
-      <div data-side="r">
-        <p class="c-drop">Você decide onde sua conversa acontece. Se escolher o modo só-local, o KAZER nunca envia nada para a nuvem em silêncio.</p>
-        <ul class="c-list">
-          <li>Chaves de API e credenciais ficam no servidor — nunca dentro do app.</li>
-          <li>Sessões guardadas com o cofre seguro do Android (Keystore).</li>
-          <li>Permissões mínimas: só o que um recurso real precisar.</li>
-          <li>Exclusão de conta acessível de dentro do app.</li>
-        </ul>
-        <p>Nada de “seus dados nunca saem do aparelho” quando a nuvem é usada. Transparência é parte da arquitetura.</p>
-      </div>
-    </article>
-
-    <article data-title="Roteiro" data-numeral="V">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo V</p>
-        <h2 class="c-title">O Roteiro da Obra</h2>
-        <p class="c-sub">Fases de construção do KAZER Android</p>
-      </div>
-      <div data-side="r">
-        <ol class="c-road">
-          <li><b>Fundação</b><span>Projeto Android nativo, identidade visual, navegação, build automatizado.</span></li>
-          <li><b>Identidade</b><span>Login e conta compartilhados com a web.</span></li>
-          <li><b>Chat nativo</b><span>Conversas, histórico e streaming pela nuvem.</span></li>
-          <li><b>Motor local</b><span>Runtime de IA no aparelho e validação do modelo.</span></li>
-          <li><b>Download do modelo</b><span>Baixar, verificar, instalar — com progresso real.</span></li>
-          <li><b>Roteador &amp; ferramentas</b><span>Local ou nuvem, com regras claras e ações seguras.</span></li>
-          <li><b>Lançamento</b><span>APK assinado aqui no site e AAB para a Google Play.</span></li>
-        </ol>
-      </div>
-    </article>
-
-    <article data-title="Próximo Capítulo" data-numeral="VI">
-      <div data-side="l">
-        <p class="c-kicker">Capítulo VI</p>
-        <h2 class="c-title">O próximo capítulo é seu.</h2>
-        <div class="c-art c-art--mono"><img src="assets/img/monogram.png" alt="" /></div>
-      </div>
-      <div data-side="r">
-        <p class="c-drop">O KAZER para Android chega primeiro aqui, no site oficial, com download verificado — e depois na Google Play.</p>
-        <p>Quando o primeiro release estiver pronto, a seção de download ganha vida: versão, tamanho, compatibilidade e o hash de verificação do arquivo.</p>
-        <p><a href="#download" class="btn btn--copper" data-close-codex>Ir para o download</a></p>
-        <p class="c-note">Fim do Volume I. Continua…</p>
-      </div>
-    </article>
+  <template id="vol-estudio">
+    <div data-page="left">
+      <h2 class="p-title">O estúdio</h2>
+      <p class="p-sub">Quem somos e como trabalhamos</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">A ANTHROXIA é um estúdio que cria produtos de inteligência artificial com cuidado de arquitetura: cada sistema é planejado em camadas antes de virar tela.</p>
+      <p>Começamos pelo KAZER, um assistente de IA para a web e para o Android. Tudo o que estamos construindo está nesta estante, um volume por assunto.</p>
+      <h3 class="p-head">Como trabalhamos</h3>
+      <ul class="p-list">
+        <li>Planejamos a estrutura antes do visual.</li>
+        <li>Mostramos o que está pronto e o que ainda está em obra.</li>
+        <li>Tratamos os seus dados como se fossem nossos.</li>
+      </ul>
+      <p class="p-contact" data-contact hidden></p>
+    </div>
   </template>
 
-  <!-- ============ SVG LIBRARY ============ -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <pattern id="hatch-h" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 2H4" stroke="currentColor" stroke-width="1"/></pattern>
-      <pattern id="hatch-d" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V5" stroke="currentColor" stroke-width="1.1"/></pattern>
+  <template id="vol-manifesto">
+    <div data-page="left">
+      <h2 class="p-title">Manifesto</h2>
+      <p class="p-sub">O que nos move</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">Não fazemos só aplicativos. Erguemos estruturas onde a inteligência pode morar.</p>
+      <p>Acreditamos que tecnologia pode ter assinatura. Que um assistente de IA pode ser bonito, rápido e honesto sobre o que faz com o que você escreve.</p>
+      <p>Preferimos construir devagar e por inteiro a lançar depressa e pela metade. Cada linha de código é um traço; cada produto, uma casa com fundações.</p>
+      <p>E quando algo ainda não estiver pronto, você vai saber.</p>
+    </div>
+  </template>
 
-      <g id="col-mini" fill="none" stroke="currentColor" stroke-width="1.2">
-        <rect x="10" y="6" width="100" height="12" fill="url(#hatch-h)"/>
-        <path d="M18 18h84v8H18z"/>
-        <circle cx="22" cy="30" r="7"/><circle cx="98" cy="30" r="7"/>
-        <path d="M28 36h64"/>
-        <path d="M30 40v150M36 40v150M42 40v150M48 40v150M54 40v150M60 40v150M66 40v150M72 40v150M78 40v150M84 40v150M90 40v150"/>
-        <path d="M24 190h72v8H24zM16 198h88v14H16z" fill="url(#hatch-d)"/>
-      </g>
+  <template id="vol-kazer">
+    <div data-page="left">
+      <h2 class="p-title">KAZER</h2>
+      <p class="p-sub">Um assistente de IA, na web e no Android</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">O KAZER é o primeiro produto da ANTHROXIA: um assistente de IA de visual escuro e minimalista, feito para conversar, planejar e criar.</p>
+      <ul class="p-list">
+        <li><strong>Uma só conta.</strong> Entre pela web ou pelo app e encontre as mesmas conversas.</li>
+        <li><strong>App Android nativo</strong>, escrito em Kotlin. Não é um site dentro de uma moldura.</li>
+        <li><strong>Respostas em tempo real</strong>, que você pode interromper quando quiser.</li>
+      </ul>
+      <p>O KAZER está em desenvolvimento. O download para Android aparece no volume IX assim que o primeiro lançamento estiver pronto.</p>
+      <p><button type="button" class="pbtn" data-goto="download">Ir para o download</button></p>
+    </div>
+  </template>
 
-      <g id="pedestal" fill="none" stroke="currentColor" stroke-width="1.4">
-        <path d="M120 20h360v18H120z" fill="url(#hatch-h)"/>
-        <path d="M140 38h320v84H140z"/>
-        <path d="M150 38v84M162 38v84M174 38v84M186 38v84M414 38v84M426 38v84M438 38v84M450 38v84"/>
-        <path d="M200 38v84M400 38v84"/>
-        <path d="M100 122h400v14H100zM70 136h460v20H70z" fill="url(#hatch-d)"/>
-      </g>
-    </defs>
-  </svg>
+  <template id="vol-local">
+    <div data-page="left">
+      <h2 class="p-title">IA no celular</h2>
+      <p class="p-sub">O KAZ 1.1 rodando no seu aparelho</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">Em celulares compatíveis, o KAZER poderá usar o modelo KAZ 1.1 direto no aparelho, aproveitando CPU, GPU ou NPU quando disponíveis.</p>
+      <p>O modelo não vem dentro do app. Depois de entrar, você decide se quer baixá-lo:</p>
+      <ol class="p-steps">
+        <li>O app confere se o seu celular tem memória e espaço suficientes.</li>
+        <li>O download roda em segundo plano, com progresso real.</li>
+        <li>O arquivo é verificado antes de ser instalado.</li>
+        <li>O modelo só aparece como pronto depois de um teste de inicialização.</li>
+      </ol>
+      <p>Enquanto isso, o KAZER continua funcionando pela nuvem. O modelo baixado fica no aparelho mesmo se você sair da conta.</p>
+    </div>
+  </template>
 
-  <script src="assets/vendor/gsap.min.js" defer></script>
-  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
-  <script src="assets/js/config.js" defer></script>
-  <script src="assets/js/main.js" defer></script>
+  <template id="vol-planta">
+    <div data-page="left">
+      <h2 class="p-title">Como tudo se conecta</h2>
+      <p class="p-sub">Um produto, dois aplicativos</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">Por trás do KAZER existe uma base única: contas, conversas e o acesso aos modelos na nuvem ficam no mesmo servidor.</p>
+      <ul class="p-list">
+        <li><strong>KAZER Web</strong> usa essa base direto do navegador.</li>
+        <li><strong>KAZER Android</strong> usa a mesma base e, conforme a sua escolha, responde com o modelo do aparelho ou com a nuvem.</li>
+      </ul>
+      <p>As chaves de acesso aos provedores de IA ficam só no servidor. Nenhuma delas vai dentro do app.</p>
+    </div>
+  </template>
+
+  <template id="vol-privacidade">
+    <div data-page="left">
+      <h2 class="p-title">Privacidade</h2>
+      <p class="p-sub">Você escolhe onde a conversa acontece</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">No modo só no aparelho, o KAZER não envia a sua conversa para a nuvem sem avisar. Se uma tarefa precisar da nuvem, ele pergunta antes.</p>
+      <ul class="p-list">
+        <li>A sessão fica guardada no cofre seguro do Android.</li>
+        <li>O app só pede as permissões que um recurso realmente usa.</li>
+        <li>Sair da conta e excluir a conta são opções diferentes, e as duas ficam claras no app.</li>
+      </ul>
+      <p>Quando a nuvem é usada, nós dizemos. Não prometemos que nada sai do seu celular se isso não for verdade.</p>
+    </div>
+  </template>
+
+  <template id="vol-roteiro">
+    <div data-page="left">
+      <h2 class="p-title">Roteiro</h2>
+      <p class="p-sub">As etapas da obra, em ordem</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <ol class="p-road">
+        <li><strong>Fundação.</strong> Projeto Android nativo e o visual do app.</li>
+        <li><strong>Conta.</strong> O mesmo login da web.</li>
+        <li><strong>Conversa.</strong> Chat nativo com respostas em tempo real.</li>
+        <li><strong>Modelo local.</strong> O KAZ 1.1 rodando no aparelho.</li>
+        <li><strong>Download do modelo.</strong> Baixar, verificar e instalar.</li>
+        <li><strong>Escolha do modelo.</strong> Local ou nuvem, com regras claras.</li>
+        <li><strong>Lançamento.</strong> APK aqui no site e versão na Google Play.</li>
+      </ol>
+      <p class="p-note">Esta lista mostra a ordem do trabalho, não datas de entrega.</p>
+    </div>
+  </template>
+
+  <template id="vol-identidade">
+    <div data-page="left">
+      <h2 class="p-title">Identidade</h2>
+      <p class="p-sub">Cores, letras e o A</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <p class="p-lead">O A cursivo é a assinatura. A palavra ANTHROXIA, em letras finas, é o nome. O resto existe para dar espaço aos dois.</p>
+      <ul class="swatches">
+        <li><span class="swatch" style="--c:#ff2bf0"></span><span>Magenta neon</span><code>#FF2BF0</code></li>
+        <li><span class="swatch" style="--c:#c98457"></span><span>Cobre</span><code>#C98457</code></li>
+        <li><span class="swatch" style="--c:#160b14"></span><span>Tinta</span><code>#160B14</code></li>
+        <li><span class="swatch" style="--c:#f6ecee"></span><span>Papel rosado</span><code>#F6ECEE</code></li>
+        <li><span class="swatch" style="--c:#5a1236"></span><span>Vinho</span><code>#5A1236</code></li>
+      </ul>
+      <p>Títulos em <span class="specimen-serif">Bodoni Moda</span>; textos e interface em <span class="specimen-sans">Jost</span>.</p>
+      <p><a class="pbtn" href="assets/img/logo-full.png" download="anthroxia-logo.png">Baixar o logotipo (PNG)</a></p>
+    </div>
+  </template>
+
+  <template id="vol-download">
+    <div data-page="left">
+      <h2 class="p-title">Baixar o KAZER</h2>
+      <p class="p-sub">KAZER para Android</p>
+      <figure class="plate" data-plate></figure>
+    </div>
+    <div data-page="right">
+      <div class="dl" data-dl>
+        <div class="dl__head">
+          <p class="dl__name">KAZER para Android</p>
+          <span class="pill" data-dl-status>Em breve</span>
+        </div>
+        <dl class="dl__specs">
+          <div><dt>Versão</dt><dd data-dl-field="version">Ainda não lançada</dd></div>
+          <div><dt>Tamanho</dt><dd data-dl-field="size">—</dd></div>
+          <div><dt>Compatível com</dt><dd data-dl-field="minAndroid">—</dd></div>
+          <div><dt>Publicado em</dt><dd data-dl-field="publishedAt">—</dd></div>
+        </dl>
+        <div class="dl__actions">
+          <a class="pbtn pbtn--solid is-disabled" data-dl-apk aria-disabled="true" role="link" tabindex="-1"><span data-dl-apk-label>APK em breve</span></a>
+          <a class="pbtn is-disabled" data-dl-play aria-disabled="true" role="link" tabindex="-1"><span data-dl-play-label>Google Play em breve</span></a>
+          <a class="pbtn is-disabled" data-dl-web aria-disabled="true" role="link" tabindex="-1"><span data-dl-web-label>Versão web em breve</span></a>
+        </div>
+        <div class="dl__verify" data-dl-verify hidden>
+          <span>Verificação SHA-256</span>
+          <code data-dl-sha></code>
+          <button type="button" class="textbtn" data-copy>Copiar</button>
+        </div>
+        <details class="dl__howto">
+          <summary>Como instalar o APK</summary>
+          <ol class="p-steps">
+            <li>Toque em Baixar APK. O arquivo vai para a pasta Downloads do celular.</li>
+            <li>Abra o arquivo. O Android pode pedir para permitir instalações desta fonte; isso é normal fora da Google Play.</li>
+            <li>Se quiser, compare o código SHA-256 do arquivo com o que aparece aqui.</li>
+            <li>Toque em Instalar, abra o KAZER e entre com a sua conta.</li>
+          </ol>
+        </details>
+        <p class="p-note" data-dl-privacy hidden><a href="#" target="_blank" rel="noopener">Política de privacidade</a></p>
+      </div>
+    </div>
+  </template>
+
+  <script src="assets/js/config.js"></script>
+  <script type="module" src="assets/js/library/main.js"></script>
 </body>
 </html>
